@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quick Files</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        /* === Wrapper Styles === */
+        #FileUpload {
+            display: flex;
+            justify-content: center;
+        }
+
+        .wrapper {
+            margin: 30px;
+            padding: 10px;
+            box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+            border-radius: 10px;
+            background-color: white;
+            width: 415px;
+        }
+
+        /* === Upload Box === */
+        .upload {
+            margin: 10px;
+            height: 85px;
+            border: 8px dashed #e6f5e9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+        }
+
+        .upload p {
+            margin-top: 12px;
+            line-height: 0;
+            font-size: 22px;
+            color: #0c3214;
+            letter-spacing: 1.5px;
+        }
+
+        .upload__button {
+            background-color: #e6f5e9;
+            border-radius: 10px;
+            padding: 0px 8px 0px 10px;
+        }
+
+        .upload__button:hover {
+            cursor: pointer;
+            opacity: 0.8;
+        }
+
+        /* === Uploaded Files === */
+        .uploaded {
+            width: 375px;
+            margin: 10px;
+            background-color: #e6f5e9;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            margin-top: 2px;
+        }
+
+        .file {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .file__name {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: baseline;
+            width: 300px;
+            line-height: 0;
+            color: #0c3214;
+            font-size: 18px;
+            letter-spacing: 1.5px;
+        }
+
+        .fa-times:hover {
+            cursor: pointer;
+            opacity: 0.8;
+        }
+
+        .fa-file-pdf {
+            padding: 15px;
+            font-size: 40px;
+            color: #0c3214;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="row w-100 justify-content-start px-4 my-2">
+        
+        <a href="/logout"  style="width: 100px !important;" class="btn btn-sm btn-warning me-auto">Logout</a>
+        <a href="/contents" style="width: 150px !important;"  class="btn btn-sm btn-warning">Content >></span></a>
+    </div>
+    <p style="text-align:left;width:100%;padding-left:10px;font-size:20px;color:orange;">Monu Saini : 2301173</p>
+
+    <h1 style="color:gray;"> Upload Your files to the Server </h1>
+    <div id="FileUpload p-3https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img1.webp">
+        <div class="wrapper">
+            <form action="/" method="post" class="m-2" enctype="multipart/form-data">
+                {% csrf_token %}
+                <h6 style="color:gray;">Title</h6>
+                <input type="text" class="form-control" name="title">
+                <div class="upload mt-3 p-3">
+                    <input type="file" name="upload" class="form-control" id="" accept=".zip,.rar,.7zip">
+                </div>
+
+                <input type="submit" value="Upload Now" class="btn btn-primary my-2">
+
+            </form>
+
+
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+        integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js"
+        integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
