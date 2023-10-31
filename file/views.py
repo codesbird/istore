@@ -16,7 +16,6 @@ def index(request):
         Files = request.FILES['upload']
         
         datasize = filesize(Files)
-        print("The File Size is : ",filesize)
         file   = Uploadfile.objects.create(title=title,file=Files,size = datasize)
         file.save()
         
@@ -27,7 +26,6 @@ def index(request):
 @login_required
 def Download(request):
     allfiles = Uploadfile.objects.all()
-    print(open(allfiles[0].file.path.replace('\\\\','/'),'r'))
     
     return render(request,"download.html",{'files':allfiles})
 
