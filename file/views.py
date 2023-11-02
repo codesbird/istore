@@ -30,11 +30,10 @@ def Download(request):
     return render(request,"download.html",{'files':allfiles})
 
     
-def Login(request):
-    return render(request,"login.html")
-
 
 def Login(request):
+    if request.user.is_authenticated:
+        return redirect('download')
     if request.method == 'POST':
         form = CustomAuthenticationForm(request, request.POST)
         
@@ -46,9 +45,7 @@ def Login(request):
             # return redirect('file_list')  # Redirect to your desired page after successful login
     else:
         form = CustomAuthenticationForm()
-    
-    # form.fields['username'] = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    # form.fields['password'] = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+  
         
     return render(request, 'login.html', {'form': form})
 
