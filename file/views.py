@@ -52,6 +52,13 @@ def Login(request):
         
     return render(request, 'login.html', {'form': form})
 
+def DeleteItem(request,id):
+    print("The item id is : ",id)
+    if request.method=="POST":
+        item  = Uploadfile.objects.filter(id=id).delete()
+        print("The item is  : ",item)
+
+    return redirect('download')
 
 def logout_view(request):
     logout(request)

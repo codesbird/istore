@@ -6,4 +6,5 @@ urlpatterns = [
     path('login/', views.Login, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('contents/', views.Download, name='download'),
+    path('deleteitem/<str:id>', views.DeleteItem, name='delete'),
 ]
