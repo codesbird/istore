@@ -8,6 +8,35 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body{
+            background-image: linear-gradient(82deg, black, #0e6151);
+        }
+        .typeext{
+            width: unset;
+            height: 50px;
+
+        }
+        #filterbox{
+            border-top-left-radius: 0px !important;
+            border-top-right-radius: 0px !important;
+            transition: all 0.5s;
+        }
+        .searchboxfex{
+            border-bottom-left-radius: 0px !important;
+            border-bottom-right-radius: 0px !important;
+        }
+        .typeext:hover{
+            background-color: #0e6151 !important;
+            color: white !important;
+        }
+        .typeext:focus{
+            background-color: #00cca3 !important;
+            color: white !important;
+        }
+
+
+    </style>
 </head>
 
 <body>
@@ -17,42 +46,34 @@
 
         <a href="/logout" style="width: 100px !important;" class="btn btn-sm btn-warning me-auto">Logout</a>
         <a href="/" style="width: 150px !important;" class="btn btn-sm btn-warning">Go to Uploads <i class="bi bi-upload"></i></a>
-        <span class="p-2 me-auto">{{request.user.get_full_name}}</span>
+        <span class="p-2 me-auto text-white">{{request.user.get_full_name}}</span>
     </div>
 
-    <h2 class="w-100 text-center">Download your content </h2>
+    <h2 class="w-100 text-center text-white">Download your content </h2>
 
     <div class="card-body">
         <div class="row mx-2">
-            <div class="col">
+            <div class="col p-0 px-1">
 
-                <input type="search" name="search" id="searchbox" class="form-control"
-                    placeholder="search files by name">
+                <input type="search" name="search" id="searchbox" class="form-control border-1 py-2"
+                    placeholder="search files by title">
+
+                <div class="card flex-row flex-wrap border-0 d-none justify-content-between mx-auto d-flex" id="filterbox">
+                    {% for type in filetypes %}
+                            <button onclick="findFiles('{{type}}')" class="btn py-0 shadow-lg m-0 typeext p-3 m-1">
+                                <i class="bi bi-clock-history fs-5 text-warning"></i>
+                                {{type|title}} Files
+                            </button>
+                    {% endfor %}
+
+                </div>
             </div>
-            <div class="col-auto">
-                <!-- Example split danger button -->
-
+            <div class="col-auto p-0">
                 <div class="btn-group">
-                    <button class="btn btn-info btn-sm" type="button"><i class="bi bi-sort-down-alt fs-4"></i></button>
-                    <button type="button" class="btn btn-sm btn-info dropdown-toggle dropdown-toggle-split"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="visually-hidden"></span>
+                    <button type="button" class="btn btn-sm btn-info" onclick="ShowFilterBox()">
+                        <i class="bi bi-sort-down-alt fs-6"></i> <span class="visually-hidden"></span>
                     </button>
-                    <ul class="dropdown-menu">
-                        <li class="dropdown-item"> <button onclick="FilterNow('all')" class="btn py-0 m-0"> <i
-                                    class="text-success bi bi-wallet-fill"></i> All Fles </button></li>
-                        <li class="dropdown-item"> <button onclick="FilterNow('img')" class="btn py-0 m-0"> <i
-                                    class="text-success bi bi-image"></i> Image Fles </button></li>
-                        <li class="dropdown-item"> <button onclick="FilterNow('pdf')" class="btn py-0 m-0"> <i
-                                    class="text-white rounded bi bi-filetype-pdf bg-success"></i> Pdf Files </button>
-                        </li>
-                        <li class="dropdown-item"> <button onclick="FilterNow('zip')" class="btn py-0 m-0"> <i
-                                    class="text-success bi bi-file-zip-fill"></i>Zip Files </button></li>
-                        <li class="dropdown-item"> <button onclick="FilterNow('c')" class="btn py-0 m-0"> <i
-                                    class="bi text-white bg-success px-1 rounded">C</i> Files </button></li>
-                        <li class="dropdown-item"> <button onclick="FilterNow('py')" class="btn py-0 m-0"> <i
-                                    class="text-white rounded bg-success bi bi-filetype-py"></i> Py Files </button></li>
-                    </ul>
+
                 </div>
             </div>
         </div>
@@ -60,33 +81,126 @@
 
 
 
-    <span id="count">Finds: {{files|length}} files</span>
+    <span id="count" class="text-white">Finds: {{files|length}} files</span>
     <hr>
-    <div class="d-flex flex-wrap  align-items-start" id="item-box">
-        {% for file in files %}
+    <div class="p-2 d-flex flex-wrap justify-content-center" id="item-box">
 
-        <div class="card overflow-hidden rounded m-2 p-3 position-reletive shadow-lg bg-info data-item mx-auto" data-text="{{file.title}}" data-file="{{file.file.path}}" style="max-width:250px;" title="{{file.title}}">
+        {% if files|length > 0 %}
+            {% for file in files %}
+
+            <div title="{{file.title}}" class="card d-flex bg-warning m-2 p-2 data-item" style="min-width:20rem;max-width:25rem;width:100%;" data-text="{{file.title}}.{{file.type}}" data-file="{{file.file}}">
+
+                <div class="position-absolute end-0 top-0 p-0 m-0">
+                    <form action="/deleteitem/{{file.fileid}}" method="post">
+                        {% csrf_token %}
+                        <button class="btn btn-sm p-0 m-0"><i class="bi bi-trash2-fill fs-4 text-danger"></i></button>
+                    </form>
+                </div>
+
+                <div class="mb-auto">
+
+                    <h5 class="card-title">{{file.title|truncatechars:60}}</h5>
+
+                    <ul class="list-group list-group-flush bg-warning my-3">
+                        <li class="list-group-item bg-warning d-flex justify-content-between align-items-center">
+                            <span>Type :
+                                {{ file.type }}
+                                {% if file.type in 'PNG JPEG JPG BMP WEBP' %}<i class="bi text-secondary fs-4 bi-card-image"></i>{% endif %}
+                                {% if file.type == 'PDF' %}<i class="bi text-secondary fs-4 bi-file-pdf"></i>{% endif %}
+                                {% if file.type == 'RAR' or file.type == 'ZIP'  %}<i class="bi text-secondary fs-4 bi-file-zip"></i>{% endif %}
+                                {% if file.type == 'TXT' %}<i class="bi bi-journal-text text-secondary fs-4"></i>{% endif %}
+                                {% if file.type == 'PY' %}<i class="border-secondary px-1 border text-secondary rounded bi bi-filetype-py"></i>{% endif %}
+                                {% if file.type == 'C' %}<i class="bi border-secondary px-1 border text-secondary rounded">C</i>{% endif %}
+                                {% if file.type == 'DOC' or file.type == 'DOCX' %}<i class="bi bi-filetype-docx text-secondary fs-4"></i>{% endif %}
+                                {% if file.type == 'HTML' %}<i class="bi bi-filetype-html text-secondary fs-4"></i>{% endif %}
+                                {% if file.type == 'CSS' %}<i class="bi bi-filetype-css text-secondary fs-4"></i>{% endif %}
+                                {% if file.type == 'JS' %}<i class="bi bi-filetype-js text-secondary fs-4"></i>{% endif %}
+                                {% if file.type == 'SH' %}<i class="bi bi-filetype-sh text-secondary fs-4"></i>{% endif %}
+                                {% if file.type in 'XLSX XLSM XLSB XLTX' %}<i class="bi bi-file-earmark-excel text-secondary fs-4"></i>{% endif %}
+                                {% if file.type in "PPT PTTX" %}<i class="bi bi-filetype-ppt text-secondary fs-4"></i>{% endif %}
+                                {% if file.type == 'JSON' %}<i class="bi bi-filetype-json text-secondary fs-4"></i>{% endif %}
+                                {% if file.type in "MP4 MKV WEBM" %}<i class="bi bi-play-btn-fill text-secondary fs-4"></i>{% endif %}
+                            </span>
+
+                            <span> Size: {{file.size}} </span>
+                        </li>
+                        <li class="list-group-item bg-warning d-flex justify-content-between">
+                            <span> {{file.date|naturaltime}} </span><span> {{request.user.username}}</span>
+                        </li>
+                    </ul>
+
+                </div>
+
+                <div class="p-2 d-flex justify-content-between">
+                    <button onclick="DownloadItem(this)" style="height:fit-content;" data-fileurl="https://istore786.pythonanywhere.com/media/{{file.file}}" class="btn btn-sm btn-primary">Donwload</button>
 
 
-        <form action="/deleteitem/{{file.id}}" method="post" class="position-absolute end-0 top-0 m-0 p-0">
-            {% csrf_token %}
-            <button type="submit" class="btn p-0"><i class="fs-5 bi bi-trash3-fill text-danger"></i></button>
-        </form>
+                <button style="height:fit-content;" onclick="ShowQrCode(this)" data-url="https://istore786.pythonanywhere.com/media/{{file.file}}" data-title="{{file.title}}" data-fileid="file{{ forloop.counter }}" class="btn btn-sm btn-secondary">Get QR</a>
+                <button   hidden data-bs-toggle="modal" data-bs-target="#staticBackdrop"></button>
 
+                </div>
 
-            <div class="p-3 justify-content-evenly bg-transparent shadow-lg rounded m-2">
-                <h6 class="card-title">{{file.title |truncatechars:60}}</h6>
             </div>
-            <a href="{{file.file.url}}" download="{{file.file.url}}" class="mx-3 btn btn-primary my-2"><i
-                    class="bi bi-download"></i> Download | {{file.size}}</a>
-            <div class="card-footer d-flex px-0 mx-0">
-                <small class="text-body-secondary me-auto">Create : {{file.date | naturaltime}}</small>
-                <small class="text-body-secondary">By: {{request.user|title}}</small>
+
+
+            <!-- </div> -->
+
+            {% endfor %}
+        {% else %}
+            <!-- <h1 class="text-warning w-100 text-center">No,There is no file to show</h1> -->
+            <div class="container">
+                <div class="card text-center">
+                    <div class="card-header">
+                        <h3 class="text-success"> <i class="bi bi-app-indicator fs-2"></i> Empty Box</h3>
+                    </div>
+                    <div class="card-body">
+                      <h5 class="card-title">There is no files to show</h5>
+                      <p class="card-text">Go to upload section to upload some new files.You can upload any file formate like Images, Zip/Rar, PDF, Docs, Excel, python, C, etc.</p>
+                      <a href="/" class="btn btn-info"> <i class="bi bi-upload"></i> Go to Uploads <i class="bi bi-upload"></i></a>
+                    </div>
+                    <div class="card-footer text-body-secondary">
+                      <span id="todaydate" class="fs-5 "><i class="bi bi-alarm"></i> </span>
+                      <script>
+                        let date = new Date()
+                        document.getElementById('todaydate').append(date.toDateString())
+                      </script>
+                    </div>
+                  </div>
+            </div>
+        {% endif %}
+
+    </div>
+
+    <!-- Button trigger modal -->
+
+  <!-- Modal -->
+  <div class="modal fade" id="staticBackdrop" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5 text-dark" id="staticBackdropLabel"></h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body h-100" id="qrimageBox">
+
+            <div class="text-center">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+
+            <div class="card-image text-center d-none  rounded shadow-lg " style="border: 5px dotted cyan;">
+                <img id="qrccodeImage" alt="" src="">
+                <!-- <p>64984956.169881</p> -->
             </div>
         </div>
-        
-        {% endfor %}
+
+      </div>
     </div>
+  </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
@@ -110,12 +224,12 @@
         let fileFound = 0
         let textFound = ''
 
-        inputbox.addEventListener('input', (event) => {
-            console.log(event.target.value)
+        let searchItem = (event)=>{
+
 
             for (i = 0; i < file_items.length; i++) {
                 element = file_items[i]
-                if (String(element.dataset.text).toLowerCase().includes(inputbox.value.toLowerCase())) {
+                if (String(element.dataset.text).toLowerCase().includes(event)) {
                     console.log(element.dataset.text)
                     element.classList.remove('d-none')
                 }
@@ -124,135 +238,113 @@
                 }
             }
 
+        }
+
+        let findFiles = (event)=>{
+            console.log(event.toLowerCase())
+            searchItem("."+event.toLowerCase())
+        }
+
+        inputbox.addEventListener('input', (event) => {
+            searchItem(inputbox.value.toLowerCase())
+
+
         })
 
         function FilterNow(value) {
-            let file_items = document.querySelectorAll('.data-item');
+            let exts = ["png","jpg","jpeg",'bmp', 'webp']
 
+            if (value=='all'){
 
-            if (value == 'img') {
-                console.log(value)
-                textFound = 'Image'
+                for(i=0;i<file_items.length;i++){
+                    element = file_items[i]
+                    if(element.classList.contains('d-none')){
+                        element.classList.remove('d-none')
+                    }
+            }
 
-                let images = ['.png', '.jpg', '.jpeg', '.webp', 'gif', 'bmp']
-                for (i = 0; i < file_items.length; i++) {
+            }
+            else if(value=='img'){
+
+                for(i=0;i<file_items.length;i++){
                     element = file_items[i]
 
-                    console.log(element.dataset.file)
+                    for(j=0;j<exts.length;j++){
+                        value = exts[j]
 
-                    for (j = 0; j < images.length; j++) {
-                        extention = images[j]
-                        print
+                        if(String(element.dataset.txt).toLowerCase().endsWith(" ")){
+                            console.log(element.dataset.file)
 
-                        if (String(element.dataset.file).toLowerCase().endsWith(extention)) {
-                            console.log(element.dataset.text)
-                            element.classList.remove('d-none')
-                            fileFound= fileFound+i
-
-                            break
+                            if(element.classList.contains('d-none')){
+                                element.classList.remove("d-none")
+                            }
                         }
-                        else {
-                            element.classList.add('d-none')
+                        else{
+                            element.classList.add("d-none")
                         }
                     }
                 }
 
-            }
-
-            else if (value == 'pdf') {
-                textFound = 'PDF'
-
-                for (i = 0; i < file_items.length; i++) {
-                    element = file_items[i]
-                    
-                    if (String(element.dataset.file).toLowerCase().endsWith('.pdf')) {
-                        console.log(element.dataset.text)
-                        element.classList.remove('d-none')
-                        fileFound= fileFound+i
-                    }
-                    else {
-                        element.classList.add('d-none')
-                    }
-                }
-
-            }
-
-            else if (value == 'zip') {
-                textFound = 'ZIP'
-
-                for (i = 0; i < file_items.length; i++) {
-                    element = file_items[i]
-                    
-                    if (String(element.dataset.file).toLowerCase().endsWith('.zip') || String(element.dataset.text).toLowerCase().endsWith('.rar')) {
-                        
-                        console.log(element.dataset.text)
-                        element.classList.remove('d-none')
-                        fileFound= fileFound+i
-                    }
-                    else {
-                        element.classList.add('d-none')
-                    }
-                }
-
-            }
-
-            else if (value == 'c') {
-                textFound = 'C'
-
-
-                for (i = 0; i < file_items.length; i++) {
-                    element = file_items[i]
-                    
-                    if (String(element.dataset.file).toLowerCase().endsWith('.c') || String(element.dataset.text).toLowerCase().endsWith('.cpp')) {
-                        console.log(element.dataset.text)
-                        element.classList.remove('d-none')
-                        fileFound= fileFound+i
-                    }
-                    else {
-                        element.classList.add('d-none')
-                    }
-                }
-
-            }
-
-            else if (value == 'py') {
-                textFound = 'Python'
-
-
-                for (i = 0; i < file_items.length; i++) {
-                    element = file_items[i]
-                    
-                    if (String(element.dataset.file).toLowerCase().endsWith('.py')) {
-                        console.log(element.dataset.text)
-                        element.classList.remove('d-none')
-                        fileFound= fileFound+i
-                    }
-                    else {
-                        element.classList.add('d-none')
-                    }
-                }
 
             }
             else{
 
                 for(i=0;i<file_items.length;i++){
                     element = file_items[i]
-                    
-                    element.classList.remove('d-none')
-                    fileFound= fileFound+i
-                    
-                }
+
+
+                        if(String(element.dataset.file).toLowerCase().endsWith("."+value)){
+                            console.log(element.dataset.file)
+                            if(element.classList.contains('d-none')){
+                                element.classList.remove("d-none")
+                            }
+                        }
+                        else{
+                            element.classList.add("d-none")
+                        }
+                    }
+
             }
 
-            if (fileFound==0){
-                item_box.innerHTML = `<h2 class="w-100 text-center text-warning fs-1" id="emptyfile">No ${textFound} file fond</h2>`
-            }
-            else{
-                file_items = 
-                document.getElementById('count').innerHTML  = `Finds: ${i} ${textFound.toLocaleLowerCase()} files`
-            }
+
+    }
+
+        function ShowQrCode(obj){
+            let staticBackdropLabel = document.getElementById('staticBackdropLabel')
+            let qrimageBox = document.getElementById('qrimageBox')
+
+            qrimageBox.firstElementChild.classList.remove('d-none')
+
+            qrimageBox.lastElementChild.classList.add('d-none')
+
+            staticBackdropLabel.innerHTML =obj.dataset.title
+            qrimageBox.lastElementChild.firstElementChild.src = `https://getqrcode.tenali.repl.co/getview?data_url=${obj.dataset.url}&bgcolor=ffffff&fgcolor=000000&emptycolor=000000&datacolor=000000&scalesize=8&bordersize=2&encodepattern=`
+            console.log(qrimageBox.lastElementChild.firstElementChild)
+            obj.nextElementSibling.click()
+            setTimeout(()=>{
+                qrimageBox.firstElementChild.classList.add('d-none')
+
+                qrimageBox.lastElementChild.classList.remove('d-none')
+            },1500)
+
+
         }
 
+        function DownloadItem(obj){
+            console.log(obj.dataset)
+            let a = document.createElement('a')
+            a.href = obj.dataset.fileurl
+            a.download = obj.dataset.fileurl.replace('https://istore786.pythonanywhere.com/media/files/','')
+            document.body.append(a)
+            a.click()
+            document.body.removeChild(a)
+        }
+
+        function ShowFilterBox(){
+            document.getElementById('filterbox').classList.toggle('d-none');
+            document.getElementById('searchbox').classList.toggle('searchboxfex')
+            searchItem('')
+        }
     </script>
 
 </body>

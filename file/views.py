@@ -1,33 +1,59 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,HttpResponse
 from file.models import Uploadfile,filesize
 from django.contrib.auth.decorators import login_required
 from django import forms
-from file.forms import CustomAuthenticationForm
+from file.forms import CustomAuthenticationForm,UploadfilesForm
 from django.contrib.auth import login, logout
 from django.conf import settings
-import os
+import time,io
 
 
 @login_required
 def index(request):
     
     if request.method =="POST":
-        title = request.POST.get('title')
-        Files = request.FILES['upload']
+        downloadid  = time.time()
         
-        datasize = filesize(Files)
-        file   = Uploadfile.objects.create(title=title,file=Files,size = datasize)
-        file.save()
+        form = UploadfilesForm(request.POST,request.FILES)
+        if form.is_valid():
+            print("THis form is valid ")
+            fields = form.fields
+
+            instans  = form.save(commit=False)
+            instans.downloadid = downloadid
+            instans.size = filesize(request.FILES['file'])
+            instans.save()
+            
+            instance = form.save(commit=False)
+            # Set additional attributes before saving
+            instance.size = filesize(instance.file)[0]  # Replace with your desired value
+            instance.downloadid = downloadid # Replace with your desired value
+            instance.fileid = time.time() # Replace with your desired value
+            instance.user = request.user  # Assuming you are using Django's User model
+            instance.save()
+            
+            print(instans)
+
         
-    return render(request,'index.html')
+    
+    else:
+        form = UploadfilesForm()
+    
+
+    return render(request,'index.html',{'form':form})
 
     
     
 @login_required
 def Download(request):
-    allfiles = Uploadfile.objects.all()
+    allfiles = Uploadfile.objects.filter(user=request.user).values()
+    filetypes = []
     
-    return render(request,"download.html",{'files':allfiles})
+    for item in allfiles:
+        item['type'] = item['file'].split('.')[-1].upper()
+        filetypes.append(item['type'])
+        
+    return render(request,"download.html",{'files':allfiles,'filetypes':set(filetypes)})
 
     
 
@@ -52,11 +78,27 @@ def Login(request):
 def DeleteItem(request,id):
     print("The item id is : ",id)
     if request.method=="POST":
-        item  = Uploadfile.objects.filter(id=id).delete()
+        item  = Uploadfile.objects.filter(fileid=id).delete()
         print("The item is  : ",item)
 
     return redirect('download')
 
+def DownloadItem(request,id):
+    print("The item id is : ",id)
+    
+    if request.method=="POST":
+        item  = Uploadfile.objects.filter(downloadid=id)
+
+        response = HttpResponse(item[0].file.url, content_type='*/*')
+        
+        response['Content-Disposition'] = f'filename="QR-Code-getqrcode-view.png"'
+
+        return redirect(f"/media/{item[0].file}")
+
 def logout_view(request):
     logout(request)
     return redirect('login')  # Redirect to the
+
+def ShareFile(request):
+    
+    return 

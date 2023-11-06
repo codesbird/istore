@@ -34,23 +34,11 @@
 
         /* === Upload Box === */
         .upload {
-            margin: 10px;
-            height: 85px;
             border: 8px dashed #e6f5e9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             border-radius: 5px;
         }
 
-        .upload p {
-            margin-top: 12px;
-            line-height: 0;
-            font-size: 22px;
-            color: #0c3214;
-            letter-spacing: 1.5px;
-        }
-
+        
         .upload__button {
             background-color: #e6f5e9;
             border-radius: 10px;
@@ -63,17 +51,7 @@
         }
 
         /* === Uploaded Files === */
-        .uploaded {
-            width: 375px;
-            margin: 10px;
-            background-color: #e6f5e9;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-start;
-            align-items: center;
-            margin-top: 2px;
-        }
+        
 
         .file {
             display: flex;
@@ -102,6 +80,17 @@
             font-size: 40px;
             color: #0c3214;
         }
+        .labletext{
+            color: #0c3214;
+            font-size: 18px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        li{
+            color: orange;
+        }
+        body{
+            background-image: linear-gradient(82deg, black, #0e6151);
+        }
     </style>
 </head>
 
@@ -116,18 +105,39 @@
 
     <h1 style="color:gray;"> Upload Your files to the Server </h1>
     <div id="FileUpload p-3https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img1.webp">
-        <div class="wrapper">
-            <form action="/" method="post" class="m-2" enctype="multipart/form-data">
-                {% csrf_token %}
-                <h6 style="color:gray;">Title</h6>
-                <input type="text" class="form-control" name="title">
-                <div class="upload mt-3 p-3">
-                    <input type="file" name="upload" class="form-control" id="" accept=".zip,.rar,.7zip">
-                </div>
 
+        <div class="wrapper border border-warning">
+            <h6 class="w-100 text-center fs-4 text-success"><i class="bi bi-ui-checks-grid"></i> Set Content</h6>
+            <form action="/" method="post" class="m-2" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                <!-- <h6 style="color:gray;">Title</h6>
+
+                <p style="font-size: 12px;font-family:'Courier New', Courier, monospace;width:100%;text-align:right;margin:0px;">0/100</p>
+                <input type="text" class="form-control" id="filetitle" name="title" maxlength="100" required>
+              {{form.as_p}} -->
+              <div class="mt-3 p-3">
+                <span class="labletext"><i class="bi bi-highlighter"></i> {{form.title.label}}</span>
+                    {{form.title}}
+                    {{form.title.errors}}
+                </div> 
+                
+                
+            <div class="upload mt-3 p-3">
+                
+                <span class="labletext"><i class="bi bi-file-earmark-medical-fill"></i> {{form.file.label}}</span>
+                    {{form.file}}
+                    <p>{{form.file.errors}}</p>
+            </div>
+
+            {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                    {{error}}
+                {% endfor %}
+            {% endif %}
                 <input type="submit" value="Upload Now" class="btn btn-primary my-2">
 
             </form>
+
 
 
 
@@ -143,6 +153,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js"
         integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz"
         crossorigin="anonymous"></script>
+    
+    <script>
+        let filetitle = document.getElementById("filetitle");
+        filetitle.addEventListener('input',(event)=>{
+            filetitle.previousElementSibling.innerHTML = `${String(filetitle.value).length}/100`
+
+        })
+    </script>
 </body>
 
 </html>
